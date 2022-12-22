@@ -37,8 +37,7 @@ The World food programme estimated that more than 7.7 million people in Zimbabwe
 The goal of this study was:
 
 -   to find out how food security & related statistics vary across different regions in Zimbabwe
--   to show the presence (or lack thereof) of the dissonace between rural and urban districts when it comes to poverty rates and food (in)security
--   how these patterns relate or correlate to election patterns
+-   to show the presence (or lack thereof) of the dissonance between rural and urban districts when it comes to poverty rates, food (in)security and food production.
 
 # About the Data
 
@@ -46,13 +45,21 @@ The Poverty Rate, Efficiency and Potential data were obtained from the Food and 
 
 The shapefiles used to plot the maps were obtained from the Humanitarian Data Exchange, an open data sharing platform managed by the United Nations Office for the Coordination of Humanitarian Affairs.
 
-The election data table and map were scraped (with permission) from Wikipedia.
+<!-- The election data table and map were scraped (with permission) from Wikipedia. -->
 
-The population data was scraped (with permission) from the ZimStat, the Zimbabwean National Statistics Agency.
+The population data was scraped (with permission) from ZimStat, the Zimbabwean National Statistics Agency.
 
-# Wrangling process
+The irrigation data was scarped (with permission) from the Zimbabwean Ministry of Agriculture and Land.
 
-# Results
+# Methodology
+
+To check for scrapping permissions, I used the `robotstxt` and `rvest`packages, then I plucked elements using the `purrr` package. All map plots were made using `leaflet`. The biggest challenge in the wrangling process was in combining the datasets from multiple sources to make the leaflet plots. This was particularly true for the district names since different sources named the districts differently. I used `dplyr` to clean the names and make them uniform across data sources.
+
+# Analysis
+
+### District Potential vs Efficiency
+
+Firstly, I looked at the agricultural potential and efficiency of each district in Zimbabwe.
 
 ```{css Michael - cursor edit, echo = FALSE}
 /*change the cursor when hovering over the map*/
@@ -65,7 +72,7 @@ The population data was scraped (with permission) from the ZimStat, the Zimbabwe
 
 ### Potential
 
-Potential is defined by the Food and Agriculture Organization as " providing the maximum agricultural income smallholders in a region can attain if performing at maximum capacity (their own, as well as of the markets, productive infrastructure, and basic services surrounding them). Agricultural income potential is determined by both the biophysical factors that impact agricultural production and the economic factors that influence crop prices. Under perfect conditions, it is the interaction of these two sets of elements that establishes the maximum income a farmer can earn from agricultural activities. To increase their agricultural income potential, farmers require long-term R&D investments that completely shift the productive paradigm through technological change."
+Potential is defined by the Food and Agriculture Organization as "the maximum agricultural income smallholders in a region can attain if performing at maximum capacity (their own, as well as of the markets, productive infrastructure, and basic services surrounding them). Agricultural income potential is determined by both the biophysical factors that impact agricultural production and the economic factors that influence crop prices. Under perfect conditions, it is the interaction of these two sets of elements that establishes the maximum income a farmer can earn from agricultural activities. To increase their agricultural income potential, farmers require long-term R&D investments that completely shift the productive paradigm through technological change."
 
 ```{r,echo=FALSE}
 distpotential_map <- st_as_sf(distpotential_map)
@@ -115,7 +122,7 @@ mypal <- colorBin("Blues",
 distlabels <- paste(
   "District: ", distefficiency_map$district, "<br/>",
   "Province: ", distefficiency_map$province, "<br/>",
-  "Potential: ", distefficiency_map$efficiency) %>% 
+  "Efficiency: ", distefficiency_map$efficiency) %>% 
   lapply(htmltools::HTML)
 
 leaflet() %>% 
@@ -135,9 +142,32 @@ leaflet() %>%
 
 ```
 
+### Data Table
+
+```{r}
+DT::datatable(pot_eff_df,
+              options = list(pageLength  = 10),
+              colnames = c("Province",
+                           "District",
+                           "Efficiency",
+                           "Potential"))
+```
+
 ##  {.unnumbered}
 
-## Provincial Irrigation Capacities 
+From the Potential plot, we can see that most of the agricultural potential is concentrated in the Northern part of the country, particularly in the provinces of Mashonaland West and Mashonaland Central. It is also important to note that the urban areas, particularly cities, have very low agricultural potential, with towns like Chitungwiza (Harare), Beitbridge Urban (Matebeleland South), and Tsholotsho (Matebeleland North) recording some of the lowest potential.
+
+The agricultural potential translates to agricultural efficiency in some cases, for example the districts of Mount Darwin and Mutoko have relatively high values in both respects. Some districts however have low agricultural potential but high efficiency, a good example being Chiredzi in Masvingo. This could be due to the successful irrigation scheme of the sugarcane lowveld in the district. Other districts like Zvimba and Rushinga have very high potential but are also highly efficient.
+
+These findings paint a picture of the problem faced by Zimbabwean farmers, markets and consumers - the problem where high agricultural potential does not equate high efficiency. This is usually due to unsustainable farming methods, like heavy reliance on rainfall patterns which have become erratic in recent years (shown by the plot below), lack of infrastructural support in the form of farming subsidies and inputs and well developed roads to markets where districts are located far from large cities. This lays a foundation for the food insecurity in Zimbabawe.
+
+## Focus On Provincial Irrigation Capacities
+
+To further investigate the discrepancies between agricultural potential and efficiency, we also plotted the area equipped for irrigation in Zimbabwe to get a picture of farmland that can be relied on to consistently produce food withstanding droughts and seasonal rainfall shifts. Unfortunately, we could not find the district level data from the Ministry of Lands and Agriculture and had to summarise the plot on a provincial level. The Agricultural Regions tab contains a plot of the defined agricultural regions of Zimbabwe and the Regions Table tab explains the characteristics of each region.
+
+##  {.tabset}
+
+### Irrigation
 
 ```{r}
 irrigation_map <- st_as_sf(irrigation_map) 
@@ -170,11 +200,27 @@ leaflet() %>%
 
 ```
 
-We also decided to look at a plot of a combination of these factors. The classification of the regions was obtained from the Food and Agriculture Organization and we decided to pair it with population data from the 2022 census to see the number of people being impacted in the classified regions.
+### Agricultural Regions
+
+![](regions.png)
+
+### Regions Table
+
+![](table.png)
+
+##  {.unnumbered}
+
+Even though we cannot directly tie this plot to potential and efficiency on a district level, we can still see that discrepancies exist between the regions with high potential and those with more land equipped for irrigation. The eastern and southern provinces of Manicaland and Masvingo have significant areas equipped for irrigation despite them having little agricultural potential.
+
+It could be argued that, in the case of Masvingo, which is classified as semi-arid, irrigation is more necessary compared to a province like Mashonaland which traditionally receives more rainfall. This however is not the case for Manicaland which has more irrigation equiped land and receives the most rainfall in the country. Recent years have also shown that traditional rainfall patterns can no longer be relied upon so across the board, there is need for more investment in irrigation equipment to offset the disparity between agricultural potential and efficiency.
+
+## Regional Classification vs Population
+
+We also decided to look at a plot of a combination of these factors. The classification of the regions was obtained from the Food and Agriculture Organization and we decided to pair it with population data from the 2022 census to identify regions where low potential and efficiency might be impacting more people. 
 
 ##  {.tabset}
 
-### Region Classification
+### Classification
 
 The plot below is a combination of the three factors mentioned above having been broken down into seven classification groups.
 
@@ -208,7 +254,7 @@ leaflet() %>%
 
 ```
 
-### Region Population
+### Population
 
 ```{r, echo=FALSE}
 district_pop_map <- st_as_sf(district_pop_map)
@@ -245,11 +291,13 @@ leaflet() %>%
 
 ##  {.unnumbered}
 
-## {.tabset}
-
-### Poverty Rate
+## District & Provincial Poverty Rate
 
 The Food and Agriculture Organization classifies its use of the poverty rate as follows: " The Priority component portrays a region's degree of urgency for investments in development, measured in terms of the wellbeing of the local population and the ultimate target beneficiaries of agricultural innovation efforts. In this analysis, poverty rates have been used as the preferred measure of regional welfare, because of their availability and consistent measurement."
+
+##  {.tabset}
+
+### District
 
 ```{r, echo=FALSE}
 distpoverty_map <- st_as_sf(distpoverty_map)
@@ -281,13 +329,9 @@ leaflet() %>%
             opacity = 1)
 ```
 
-### Election results
+<!-- ### Election results -->
 
-![Presidential election results map. Green denotes districts won by Mnangagwa, red denotes those won by Chamisa.](wiki_prov_results.png)
-
-## {.unnumbered}
-
-## {.tabset}
+<!-- ![Presidential election results map. Green denotes districts won by Mnangagwa, red denotes those won by Chamisa.](wiki_prov_results.png) -->
 
 ### Provincial Poverty Rate
 
@@ -323,11 +367,9 @@ leaflet() %>%
 
 ```
 
-### Provincial Election Results
+<!-- ![Presidential election results map. Green denotes provinces won by Mnangagwa, red denotes those won by Chamisa.](prov_results.png) -->
 
-![Presidential election results map. Green denotes provinces won by Mnangagwa, red denotes those won by Chamisa.](prov_results.png)
-
-## {.unnumbered}
+##  {.unnumbered}
 
 # Limitations
 

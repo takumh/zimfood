@@ -19,6 +19,7 @@ potential <- read_csv("wrangle_data/zwe_rev_all_potential.csv")
 combo <- read_csv("wrangle_data/zwe_rev_all_typology.csv")
 pop_data <- read_csv("wrangle_data/population.csv")
 irrigation <- read_csv("wrangle_data/irrigation.csv")
+food_prices <- read_csv("wrangle_data/wfp_food_prices_zwe.csv")
 #shapefiles
 zimmap <- st_read("zimshapefile.gdb")
 zimmap_layers <- st_layers(dsn = "zimshapefile.gdb" )
@@ -172,6 +173,14 @@ irrigation_map <- irrigation_map %>%
   select(province,
          area_equipped_for_irrigation_ha,
          Shape)
+
+#combine potential and efficiency
+pot_eff_df <- distefficiency_map %>% 
+  inner_join(distpotential_map) %>% 
+  select(province,
+         district,
+         efficiency,
+         potential)
   
  
 #Save all data to data folder
@@ -185,6 +194,7 @@ save(distefficiency_map,
      prov_pov_map,
      irrigation_map,
      district_pop_map,
+     pot_eff_df,
      file = "final_data/blog_data.RData")
 
 
