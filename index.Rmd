@@ -5,6 +5,8 @@ date: "12/20/2022"
 output:
   rmdformats::robobook:
     highlight: "kate"
+bibliography: packages.bib
+
 nocite: '@*'
 ---
 
@@ -32,7 +34,7 @@ load("final_data/blog_data.RData")
 
 ## Background and Motivation
 
-The World food programme estimated that more than 7.7 million people in Zimbabwe - half the population - would face food insecurity in 2020. Zimbabwe is not ranked on the Global Hunger Index (because of lack of data) but the 2022 provisional severity is designated as "Serious", a designation carried from as far as 2019. Previously (2017), Zimbabwe has ranked as high as 108 out of 119 countries with the situation exarcebated by economic instability, rising inflation, high unemployment and recurrent erratic climate. This is in stark contrast to 1980, when Zimbabwe was known as the breadbasket of Africa. The situation is most dire in rural areas.
+The World food program estimated that more than 7.7 million people in Zimbabwe - half the population - would face food insecurity in 2020. Zimbabwe is not ranked on the Global Hunger Index (because of lack of data) but the 2022 provisional severity is designated as "Serious", a designation carried from as far as 2019. Previously (2017), Zimbabwe has ranked as high as 108 out of 119 countries with the situation exacerbated by economic instability, rising inflation, high unemployment and recurrent erratic climate. This is in stark contrast to 1980, when Zimbabwe was known as the breadbasket of Africa. The situation is most dire in rural areas.
 
 The goal of this study was:
 
@@ -49,7 +51,7 @@ The shapefiles used to plot the maps were obtained from the Humanitarian Data Ex
 
 The population data was scraped (with permission) from ZimStat, the Zimbabwean National Statistics Agency.
 
-The irrigation data was scarped (with permission) from the Zimbabwean Ministry of Agriculture and Land.
+The irrigation data was scraped (with permission) from the Zimbabwean Ministry of Agriculture and Land.
 
 # Methodology
 
@@ -59,7 +61,7 @@ To check for scrapping permissions, I used the `robotstxt` and `rvest`packages, 
 
 ### District Potential vs Efficiency
 
-Firstly, I looked at the agricultural potential and efficiency of each district in Zimbabwe.
+Firstly, I looked at the agricultural potential and efficiency of each district in Zimbabwe.I also included a data table to allow more interaction with the data.
 
 ```{css Michael - cursor edit, echo = FALSE}
 /*change the cursor when hovering over the map*/
@@ -159,11 +161,11 @@ From the Potential plot, we can see that most of the agricultural potential is c
 
 The agricultural potential translates to agricultural efficiency in some cases, for example the districts of Mount Darwin and Mutoko have relatively high values in both respects. Some districts however have low agricultural potential but high efficiency, a good example being Chiredzi in Masvingo. This could be due to the successful irrigation scheme of the sugarcane lowveld in the district. Other districts like Zvimba and Rushinga have very high potential but are also highly efficient.
 
-These findings paint a picture of the problem faced by Zimbabwean farmers, markets and consumers - the problem where high agricultural potential does not equate high efficiency. This is usually due to unsustainable farming methods, like heavy reliance on rainfall patterns which have become erratic in recent years (shown by the plot below), lack of infrastructural support in the form of farming subsidies and inputs and well developed roads to markets where districts are located far from large cities. This lays a foundation for the food insecurity in Zimbabawe.
+These findings paint a picture of the problem faced by Zimbabwean farmers, markets and consumers - the problem where high agricultural potential does not equate high efficiency. This is usually due to unsustainable farming methods, like heavy reliance on rainfall patterns which have become erratic in recent years (shown by the plot below), lack of infrastructural support in the form of farming subsidies and inputs and well developed roads to markets where districts are located far from large cities. This lays a foundation for the food insecurity in Zimbabwe.
 
 ## Focus On Provincial Irrigation Capacities
 
-To further investigate the discrepancies between agricultural potential and efficiency, we also plotted the area equipped for irrigation in Zimbabwe to get a picture of farmland that can be relied on to consistently produce food withstanding droughts and seasonal rainfall shifts. Unfortunately, we could not find the district level data from the Ministry of Lands and Agriculture and had to summarise the plot on a provincial level. The Agricultural Regions tab contains a plot of the defined agricultural regions of Zimbabwe and the Regions Table tab explains the characteristics of each region.
+To further investigate the discrepancies between agricultural potential and efficiency, we also plotted the area equipped for irrigation in Zimbabwe to get a picture of farmland that can be relied on to consistently produce food withstanding droughts and seasonal rainfall shifts. Unfortunately, we could not find the district level data from the Ministry of Lands and Agriculture and had to summarize the plot on a provincial level. The Agricultural Regions tab contains a plot of the defined agricultural regions of Zimbabwe and the Regions Table tab explains the characteristics of each region.
 
 ##  {.tabset}
 
@@ -212,11 +214,11 @@ leaflet() %>%
 
 Even though we cannot directly tie this plot to potential and efficiency on a district level, we can still see that discrepancies exist between the regions with high potential and those with more land equipped for irrigation. The eastern and southern provinces of Manicaland and Masvingo have significant areas equipped for irrigation despite them having little agricultural potential.
 
-It could be argued that, in the case of Masvingo, which is classified as semi-arid, irrigation is more necessary compared to a province like Mashonaland which traditionally receives more rainfall. This however is not the case for Manicaland which has more irrigation equiped land and receives the most rainfall in the country. Recent years have also shown that traditional rainfall patterns can no longer be relied upon so across the board, there is need for more investment in irrigation equipment to offset the disparity between agricultural potential and efficiency.
+It could be argued that, in the case of Masvingo, which is classified as semi-arid, irrigation is more necessary compared to a province like Mashonaland which traditionally receives more rainfall. This however is not the case for Manicaland which has more irrigation equipped land and receives the most rainfall in the country. Recent years have also shown that traditional rainfall patterns can no longer be relied upon so across the board. With about 70% of the nation depending on rain-fed farming, there is need for more investment in irrigation equipment to offset the disparity between agricultural potential and efficiency. The Food and Agriculture Organization estimates that the peasant factor which produces 70% of staple foods (maize, millet and ground) has access to less than 5% of the national irrigation facilities.
 
 ## Regional Classification vs Population
 
-We also decided to look at a plot of a combination of these factors. The classification of the regions was obtained from the Food and Agriculture Organization and we decided to pair it with population data from the 2022 census to identify regions where low potential and efficiency might be impacting more people. 
+We also decided to look at a plot of a combination of these factors. The classification of the regions was obtained from the Food and Agriculture Organization and we decided to pair it with population data from the 2022 census to identify regions where low potential and efficiency might be impacting more people.
 
 ##  {.tabset}
 
@@ -256,6 +258,8 @@ leaflet() %>%
 
 ### Population
 
+Below is a plot of the population of each district sourced from the 2022 census.
+
 ```{r, echo=FALSE}
 district_pop_map <- st_as_sf(district_pop_map)
 
@@ -291,7 +295,13 @@ leaflet() %>%
 
 ##  {.unnumbered}
 
+The classification map shows that most of the northern districts are High priority. This coincides with the potential plot above. It is interesting to note that all the urban districts, such as Bulawayo Urban, Masvingo Urban and Mutare Urban are classified as Low priority or Low priority with high agricultural opportunities. Conversely, these are the districts with the higher populations. In other cases, districts classified as Critical or High performance also have higher populations.
+
+The inconsistency between district classifications and populations might also explain the food insecurity in Zimbabwe. In cases where food has has to be moved from high-priority-low-population districts to high-population districts where the market is, poor road networks and infrastuctural challenges might make demand and supply disproportionate.
+
 ## District & Provincial Poverty Rate
+
+I decided to look at the poverty rate for each district to assess the impact that the previous statistics have on the districts.
 
 The Food and Agriculture Organization classifies its use of the poverty rate as follows: " The Priority component portrays a region's degree of urgency for investments in development, measured in terms of the wellbeing of the local population and the ultimate target beneficiaries of agricultural innovation efforts. In this analysis, poverty rates have been used as the preferred measure of regional welfare, because of their availability and consistent measurement."
 
@@ -329,48 +339,114 @@ leaflet() %>%
             opacity = 1)
 ```
 
+### Data table
+
+```{r}
+DT::datatable(pov_df,
+              options = list(pageLength  = 10),
+              colnames = c("Province",
+                           "District",
+                           "Poverty Rate"))
+```
+
 <!-- ### Election results -->
 
 <!-- ![Presidential election results map. Green denotes districts won by Mnangagwa, red denotes those won by Chamisa.](wiki_prov_results.png) -->
 
-### Provincial Poverty Rate
+<!-- ### Provincial Poverty Rate -->
 
-```{r, echo=FALSE}
-prov_pov_map <- st_as_sf(prov_pov_map)
+<!-- ```{r, echo=FALSE} -->
 
-bins <- c(0, 20, 150, 250, 600,700,800)
-mypal <- colorBin(#rocket(7),
-                "Purples",
-                domain = prov_pov_map$poverty_rate,
-                na.color = "transparent",
-                bins = bins)
+<!-- prov_pov_map <- st_as_sf(prov_pov_map) -->
 
-distlabels <- paste(
-  "Province: ", prov_pov_map$province, "<br/>",
-  "Poverty Rate: ", prov_pov_map$poverty_rate) %>% 
-  lapply(htmltools::HTML)
+<!-- bins <- c(0, 20, 150, 250, 600,700,800) -->
 
-leaflet() %>% 
-  addPolygons(data = prov_pov_map,
-              fillColor = ~mypal(poverty_rate),
-              stroke = TRUE,
-              fillOpacity = 0.5,
-              color = 'White',
-              weight = 1.5,
-              label = distlabels) %>% 
-     addLegend(data = prov_pov_map,
-            "bottomleft",
-            pal = mypal,
-            values = ~poverty_rate,
-            title = "Poverty Rate",
-            opacity = 1)
+<!-- mypal <- colorBin(#rocket(7), -->
 
-```
+<!--                 "Purples", -->
+
+<!--                 domain = prov_pov_map$poverty_rate, -->
+
+<!--                 na.color = "transparent", -->
+
+<!--                 bins = bins) -->
+
+<!-- distlabels <- paste( -->
+
+<!--   "Province: ", prov_pov_map$province, "<br/>", -->
+
+<!--   "Poverty Rate: ", prov_pov_map$poverty_rate) %>%  -->
+
+<!--   lapply(htmltools::HTML) -->
+
+<!-- leaflet() %>%  -->
+
+<!--   addPolygons(data = prov_pov_map, -->
+
+<!--               fillColor = ~mypal(poverty_rate), -->
+
+<!--               stroke = TRUE, -->
+
+<!--               fillOpacity = 0.5, -->
+
+<!--               color = 'White', -->
+
+<!--               weight = 1.5, -->
+
+<!--               label = distlabels) %>%  -->
+
+<!--      addLegend(data = prov_pov_map, -->
+
+<!--             "bottomleft", -->
+
+<!--             pal = mypal, -->
+
+<!--             values = ~poverty_rate, -->
+
+<!--             title = "Poverty Rate", -->
+
+<!--             opacity = 1) -->
+
+<!-- ``` -->
 
 <!-- ![Presidential election results map. Green denotes provinces won by Mnangagwa, red denotes those won by Chamisa.](prov_results.png) -->
 
 ##  {.unnumbered}
 
+Firstly, it is clear that the urban districts have the lowest poverty rates. This is not really surprising since these districts have more employment opportunities and economic activity compared to rural districts.
+
+What is surprising is that the northern districts which have high agricultural activity have the highest poverty rates too. This is surprising because agriculture is the backbone of Zimbabwean economy, providing employment directly or indirectly to 60-70% of the population and contributing approximately 17% to the GDP. The apparent lack of incentive or return on people living in districts of high agricultural activity is surprising.
+
 # Limitations
 
+The biggest challenge of this study was data access. I would have preferred to use data from more sources, particularly the Zimbabwean government, to just compare how they classify regions and agricultural productivity. I also hoped to compare food prices in recent years to see trends and patterns surrounding income levels and the prices of basic commodities. Lastly, I had hoped to investigate the impact of Covid-19 on food security especially after the government instituted lockdowns cut access between markets and suppliers and cut off the income of informal workers who make up a good portion of the work force.
+
 # Future work
+
+In future I hope to investigate the impact of Covid-19 on Zimbabwe's food security. I also know that the Russian-Ukraine conflict has had an impact on Zimbabwe's grain imports and I would like to quantify the impact in a study.
+
+# References
+
+## Datasets
+
+Food and Agriculture Organization. "HiH Agricultural Typologies - Zimbabwe" Food and Agriculture Organization, 2022. <https://data.apps.fao.org/catalog/dataset/hih-agricultural-typologies-zimbabwe>
+
+Food and Agriculture Organization. "Zimbabwe at a glance" Food and Agriculture Organization, 2022. <https://www.fao.org/zimbabwe/fao-in-zimbabwe/zimbabwe-at-a-glance>.
+
+United Nations Office for the Coordination of Humanitarian Affairs. "Zimbabwe- Subnational Adminstrative Boundaries." Humanitarian Data Exchange, 2022. <https://data.humdata.org/dataset/cod-ab-zwe>.
+
+Zimbabwean National Statistics Agency. "2022 Population & Housing Census - Preliminary." Zimbabwe Data Portal, 2022. <https://zimbabwe.opendataforafrica.org/anjlptc/2022-population-housing-census-preliminary>.
+
+## R Packages
+
+```{r R packages bibliography, include=FALSE}
+
+# automatically create a bib database for R packages
+
+knitr::write_bib(
+
+  c(.packages(), 'knitr', 'rmarkdown'), 
+
+  'packages.bib')
+
+```

@@ -1,0 +1,206 @@
+# Zimbabwean Food Security Wrangling
+
+#load packages
+library(sf)
+library(tidyverse)
+library(leaflet)
+library(maps)
+library(janitor)
+library(robotstxt)
+library(rvest)
+library(purrr)
+library(dplyr)
+
+#load files
+#csvs
+poverty <- read_csv("wrangle_data/zwe_rev_all_poverty.csv")
+efficiency <- read_csv("wrangle_data/zwe_rev_all_efficiency.csv")
+potential <- read_csv("wrangle_data/zwe_rev_all_potential.csv")
+combo <- read_csv("wrangle_data/zwe_rev_all_typology.csv")
+pop_data <- read_csv("wrangle_data/population.csv")
+irrigation <- read_csv("wrangle_data/irrigation.csv")
+food_prices <- read_csv("wrangle_data/wfp_food_prices_zwe.csv")
+#shapefiles
+zimmap <- st_read("zimshapefile.gdb")
+zimmap_layers <- st_layers(dsn = "zimshapefile.gdb" )
+provincialmap <- st_read("zimshapefile.gdb", 
+                         layer = "zwe_admbnda_adm1_zimstat_ocha_20180911")
+districtmap <- st_read("zimshapefile.gdb", 
+                       layer = "zwe_admbnda_adm2_zimstat_ocha_20180911")
+wardmap <- st_read("zimshapefile.gdb", 
+                   layer = "zwe_admbnda_adm3_zimstat_ocha_20180911")
+
+#scrape election data from wikipedia
+province_elec_url <- "https://en.wikipedia.org/wiki/2018_Zimbabwean_general_election"
+
+#check if bots are allowed
+paths_allowed(province_elec_url)
+
+#scrape election results table
+prov_results_table <- province_elec_url %>% 
+  read_html() %>% 
+  html_elements("table") %>% 
+  pluck(10) %>% 
+  html_table %>%
+  janitor::clean_names()
+
+#view layers
+zimmap_layers
+
+#standardise column names
+poverty <- poverty %>% 
+  clean_names()
+
+potential <- potential %>% 
+  clean_names()
+
+efficiency <- efficiency %>% 
+  clean_names()
+
+combo <- combo %>% 
+  clean_names()
+
+#place column names not read correctly on pop_data
+dist_pop_data <- pop_data %>% 
+  row_to_names(6) %>% 
+  clean_names() %>% 
+  rename("female_pop" = "na",
+         "male_pop" =  "na_2",
+          "total_pop" =  "na_3")
+
+#remove totals from population data
+district_pop_data <- dist_pop_data[!dist_pop_data$ward == "Total",]
+
+#remove columns from irrigation data
+irrigation_map <- irrigation[-(11:13),]
+
+#rename values in columns to match shapefiles
+district_pop_data <- district_pop_data %>% 
+  mutate(districts = recode(districts, 
+                            Beitbridge = 'Beitbridge Urban',
+                            `Beitbridge Rural` = 'Beitbridge',
+                            `Bindura Rural` = 'Bindura',
+                            `Chegutu Rural` = 'Chegutu',
+                            `Chinhoyi Urban` = 'Chinhoyi',
+                            `Chipinge Rural` = 'Chipinge',
+                            `Chiredzi Rural` = 'Chiredzi',
+                            Muzarabani = 'Centenary/ Muzarabani',
+                            `Gokwe Centre` = 'Gokwe South Urban',
+                            `Gweru Rural` = 'Gweru',
+                            `Harare Urban` = 'Harare',
+                            `Hwange Rural` = 'Hwange',
+                            Kadoma = 'Kadoma Urban',
+                            `Kariba Rural` = 'Kariba',
+                            `Kwekwe Rural` = 'Kwekwe',
+                            Marondera = 'Marondera Urban',
+                            `Marondera Rural` = 'Marondera',
+                            `Masvingo Rural` = 'Masvingo',
+                            `Mhondoro Ngezi` = 'Mhondoro-Ngezi',
+                            Mutare = 'Mutare Urban',
+                            `Mutare Rural` = 'Mutare',
+                            `Nyanga Rural` = 'Nyanga',
+                            `Ruwa Local Board` = 'Ruwa',
+                            `Shurugwi Rural` = 'Shurugwi',
+                            `Shurugwi Urban` = 'Shurugwi Town',
+                            `Uzumba Maramba Pfungwe (UMP)` = 'Uzumba Maramba Pfungwe',
+                            `Zvishavane Rural` = 'Zvishavane'))
+
+#make a districtmap for poverty rate
+distpoverty_map <- poverty %>% 
+  inner_join(districtmap,
+             by = c("adm2_en" = "admin2Name_en")) %>% 
+  select(district,
+         province,
+         poverty_rate,
+         Shape)
+
+#make a district map for potential
+distpotential_map <- potential %>% 
+  inner_join(districtmap,
+             by = c("adm2_en" = "admin2Name_en")) %>% 
+  select(district,
+         province,
+         potential,
+         Shape)
+
+#make an efficiency map for districts
+distefficiency_map <- efficiency %>% 
+  inner_join(districtmap,
+             by = c("adm2_en" = "admin2Name_en")) %>% 
+  select(district,
+         province,
+         efficiency,
+         Shape)
+
+#make an combination map for districts
+combo_map <- combo %>% 
+  inner_join(districtmap,
+             by = c("adm2_en" = "admin2Name_en")) %>% 
+  select(district,
+         province,
+         cat_tercil,
+         Shape)
+
+#make a provincial poverty rate map
+prov_pov_map <- poverty %>% 
+  group_by(province) %>% 
+  summarise_at(vars(poverty_rate),
+               list(poverty_rate = sum)) %>% 
+  inner_join(provincialmap,
+             by = c("province" = "admin1Name_en")) %>% 
+  select(province,
+         poverty_rate,
+         Shape)
+
+#make a provincial population map
+district_pop_map <- district_pop_data %>% 
+  group_by(districts) %>% 
+  summarise_at(vars(total_pop),
+               list(total_pop = sum)) %>% 
+  inner_join(districtmap,
+             by = c("districts" = "admin2Name_en")) %>% 
+  select(districts,
+         total_pop,
+         admin1Name_en,
+         Shape) %>% 
+  rename("province" = "admin1Name_en")
+
+#make irrigation map
+irrigation_map <- irrigation_map %>% 
+  clean_names() %>% 
+  inner_join(provincialmap,
+             by = c("province" = "admin1Name_en")) %>% 
+  select(province,
+         area_equipped_for_irrigation_ha,
+         Shape)
+
+#combine potential and efficiency
+pot_eff_df <- distefficiency_map %>% 
+  inner_join(distpotential_map) %>% 
+  select(province,
+         district,
+         efficiency,
+         potential)
+
+pov_df <- distpoverty_map %>% 
+  select(province,
+         district,
+         poverty_rate)
+  
+ 
+#Save all data to data folder
+save(distefficiency_map,
+     distpotential_map,
+     distpoverty_map,
+     provincialmap,
+     districtmap,
+     wardmap,
+     combo_map,
+     prov_pov_map,
+     irrigation_map,
+     district_pop_map,
+     pot_eff_df,
+     pov_df,
+     file = "final_data/blog_data.RData")
+
+

@@ -7,9 +7,28 @@
 "0","library(leaflet)"
 "0","library(sf)"
 "0","library(kableExtra)"
+"2","
+Attaching package: ‘kableExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    group_rows
+
+"
 "0","library(RColorBrewer)"
 "0","library(dplyr)"
 "0","library(viridis)"
-"0",""
+"2","Loading required package: viridisLite
+"
+"2","
+Attaching package: ‘viridis’
+
+"
+"2","The following object is masked from ‘package:maps’:
+
+    unemp
+
+"
 "0","#load data"
 "0","load(""final_data/blog_data.RData"")"
