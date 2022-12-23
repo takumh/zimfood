@@ -299,7 +299,7 @@ The classification map shows that most of the northern districts are High priori
 
 The inconsistency between district classifications and populations might also explain the food insecurity in Zimbabwe. In cases where food has has to be moved from high-priority-low-population districts to high-population districts where the market is, poor road networks and infrastuctural challenges might make demand and supply disproportionate.
 
-## District & Provincial Poverty Rate
+## District Poverty Rate
 
 I decided to look at the poverty rate for each district to assess the impact that the previous statistics have on the districts.
 
@@ -413,7 +413,7 @@ DT::datatable(pov_df,
 
 ##  {.unnumbered}
 
-Firstly, it is clear that the urban districts have the lowest poverty rates. This is not really surprising since these districts have more employment opportunities and economic activity compared to rural districts.
+Firstly, it is important to note that some districts did not have data records and are recorded as zero. It is  clear that the urban districts have the lowest poverty rates. This is not really surprising since these districts have more employment opportunities and economic activity compared to rural districts.
 
 What is surprising is that the northern districts which have high agricultural activity have the highest poverty rates too. This is surprising because agriculture is the backbone of Zimbabwean economy, providing employment directly or indirectly to 60-70% of the population and contributing approximately 17% to the GDP. The apparent lack of incentive or return on people living in districts of high agricultural activity is surprising.
 
