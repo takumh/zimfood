@@ -181,11 +181,6 @@ pot_eff_df <- distefficiency_map %>%
          district,
          efficiency,
          potential)
-
-pov_df <- distpoverty_map %>% 
-  select(province,
-         district,
-         poverty_rate)
   
  
 #Save all data to data folder
@@ -200,7 +195,6 @@ save(distefficiency_map,
      irrigation_map,
      district_pop_map,
      pot_eff_df,
-     pov_df,
      file = "final_data/blog_data.RData")
 
 
